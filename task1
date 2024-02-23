@@ -1,0 +1,29 @@
+SELECT
+    o.OrderID,
+    o.Date AS OrderDate,
+    CASE o.Status
+        WHEN 1 THEN 'Cancelled'
+        WHEN 2 THEN 'Pending'
+        WHEN 3 THEN 'Complete'
+        ELSE 'Unknown'
+    END AS Status,
+    o.Total,
+    pm.Name AS PaymentMethod,
+    c.Name AS CustomerName,
+    s.Name AS StoreName,
+    SUM(CASE WHEN i.Denom = 'One' THEN od.CashValue ELSE 0 END) AS Ones,
+    SUM(CASE WHEN i.Denom = 'Two' THEN od.CashValue ELSE 0 END) AS Twos,
+    SUM(CASE WHEN i.Denom = 'Five' THEN od.CashValue ELSE 0 END) AS Fives,
+    SUM(CASE WHEN i.Denom = 'Ten' THEN od.CashValue ELSE 0 END) AS Tens,
+    SUM(CASE WHEN i.Denom = 'Twenty' THEN od.CashValue ELSE 0 END) AS Twenties,
+    SUM(CASE WHEN i.Denom = 'Fifty' THEN od.CashValue ELSE 0 END) AS Fifties,
+    SUM(CASE WHEN i.Denom = 'Hundred' THEN od.CashValue ELSE 0 END) AS Hundreds
+FROM
+    Orders o
+    JOIN OrderDetails od ON o.OrderID = od.OrderID
+    JOIN Items i ON od.ItemID = i.ItemID
+    JOIN PaymentMethod pm ON o.PaymentMethodID = pm.MethodID
+    JOIN Customers c ON o.CustomerID = c.ID
+    JOIN Store s ON o.StoreID = s.ID
+GROUP BY
+    o.OrderID, o.Date, o.Status, o.Total, pm.Name, c.Name, s.Name;
