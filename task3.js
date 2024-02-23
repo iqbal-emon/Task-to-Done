@@ -45,7 +45,7 @@ function binarySearch(arr,target){
    
    const result=binarySearch(sortedArray,searchElement);
    
-   if(result==0){
+   if(result===0){
      console.log("Not found");
    }
    else{
